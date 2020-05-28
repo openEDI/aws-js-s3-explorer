@@ -19,7 +19,7 @@ permissions and limitations under the License.
 <html lang="en">
 
 <head>
-    <title>AWS S3 Explorer</title>
+    <title>AWS S3 Explorer for the Open Energy Data Initiative</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="shortcut icon" href="https://aws.amazon.com/favicon.ico">
@@ -64,25 +64,45 @@ permissions and limitations under the License.
         #navbuttons .btn {
             padding: 3px 6px;
         }
+
+        #panel-mod {
+          background-image: -webkit-linear-gradient(top, red 0%, blue 100%);
+          background-image: -o-linear-gradient(top, red 0%, blue 100%);
+          background-image: linear-gradient(to bottom, red 0%, blue 100%);
+          filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#red', endColorstr='#red', GradientType=0);
+          background-repeat: repeat-x;
+        }
+
+        #cp {
+            font: 3px "Lucida Grande", Helvetica, Arial, sans-serif;
+            padding: 5px 15px;
+        }
+
+
     </style>
 </head>
 
 <!-- DEBUG: Enable this for red outline on all elements -->
-<!-- <style media="screen" type="text/css"> * { outline: 1px red solid; } </style> -->
+<!--<style media="screen" type="text/css"> * { outline: 1px red solid; } </style>-->
 
 <body>
     <div id="page-wrapper">
-        <div class="row">
+        <div class="row" >
             <div class="col-lg-12">
                 <div class="panel panel-primary">
 
                     <!-- Panel including title, breadcrumbs, and controls -->
-                    <div class="panel-heading clearfix">
+                    <div class="panel-mod clearfix" >
                         <!-- Title and breadcrumbs -->
-                        <div class="btn-group pull-left">
+                        <div class="btn-group pull-left" >
+                            <div class="btn-group pull-left">
+                                <a href="https://data.openei.org/">
+                                    <img src="https://data.openei.org/assets/img/OEDI-text-logo.png" alt="OEDI logo" aria-hidden="true" width="86" HSPACE="5" VSPACE="5"/>
+                                </a>
+                            </div>
                             <!-- App title -->
                             <div class="title pull-left">
-                                AWS S3 Explorer&nbsp;
+                                AWS S3 Explorer for the Open Energy Data Initiative&nbsp;
                             </div>
                             <!-- Bucket breadcrumbs -->
                             <div class="pull-right">
@@ -145,6 +165,18 @@ permissions and limitations under the License.
             </div>
         </div>
     </div>
+    <div style="font-size:10px; padding: 5px 15px;">
+        Copyright 2020 Open Energy Data Initiative<br/>
+
+        Copyright 2014-2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.<br/>
+
+        Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.<br/>
+
+        You may obtain a copy of the License at <a href="http://www.apache.org/licenses/LICENSE-2.0">http://www.apache.org/licenses/LICENSE-2.0</a><br/>
+
+        This file has been modified by the Open Energy Data Initiative to add links to the OEDI data catalog and add the OEDI logo to provide context.
+
+    </div>
 </body>
 
 </html>
@@ -158,10 +190,33 @@ permissions and limitations under the License.
 <script src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap.min.js"></script>
 
 <script type="text/javascript">
+
+     /**
+     * Get the URL parameters
+     * source: https://css-tricks.com/snippets/javascript/get-url-variables/
+     * @param  {String} url The URL
+     * @return {Object}     The URL parameters
+     */
+    var getParams = function (url) {
+        var params = {};
+        var parser = document.createElement('a');
+        parser.href = url;
+        var query = parser.search.substring(1);
+        var vars = query.split('&');
+        for (var i = 0; i < vars.length; i++) {
+            var pair = vars[i].split('=');
+            params[pair[0]] = decodeURIComponent(pair[1]);
+        }
+        return params;
+    };
+
+    thisBucket =  getParams(window.location.href)['bucket'];
+
+
     var HIDE_INDEX = true;
     var s3exp_config = {
-        Region: '',
-        Bucket: '',
+        Region: 'us-west-2',
+        Bucket: thisBucket,
         Prefix: '',
         Delimiter: '/'
     };
@@ -200,6 +255,7 @@ permissions and limitations under the License.
             return this.slice(-str.length) == str;
         };
     }
+
 
     function object2hrefvirt(bucket, key) {
         var enckey = key.split('/').map(function(x) { return encodeURIComponent(x); }).join('/');
@@ -712,6 +768,8 @@ permissions and limitations under the License.
                 console.log("host bucket=" + bucket);
                 console.log("host region=" + region);
             }
+
+            console.log('THISBUCKET:' + thisBucket);
 
             // If we found statically-hosted website prefix or explicit region, for
             // example s3-us-west-2, then get region else use the default of US Standard
